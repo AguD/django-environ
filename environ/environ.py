@@ -596,7 +596,7 @@ class Env(object):
         return config
 
     @classmethod
-    def read_env(cls, env_file=None, **overrides):
+    def read_env(cls, env_file=None, override=False):
         """Read a .env file into os.environ.
 
         If not given a path to a dotenv path, does filthy magic stack backtracking
@@ -636,11 +636,10 @@ class Env(object):
                 m3 = re.match(r'\A"(.*)"\Z', val)
                 if m3:
                     val = re.sub(r'\\(.)', r'\1', m3.group(1))
-                cls.ENVIRON.setdefault(key, str(val))
-
-        # set defaults
-        for key, value in overrides.items():
-            cls.ENVIRON.setdefault(key, value)
+                if override:  # Override existing enviroment variables
+                    cls.ENVIRON[key] = str(val)
+                else:
+                    cls.ENVIRON.setdefault(key, str(val))
 
 
 class Path(object):
